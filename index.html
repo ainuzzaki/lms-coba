@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Learning SMP Islam Moetiah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="icon" type="image/png" href="data:image/png;base64,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">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
@@ -109,6 +110,15 @@
         .form-actions { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; align-items:center; }
         .form-row { display:flex; flex-wrap:wrap; gap:16px; align-items:end; }
         .form-row .form-group { flex:1; min-width:140px; }
+        .form-group input[readonly] { background:#f1f5f9; color:#475569; cursor:not-allowed; }
+        .jam-checkbox-group { display:flex; flex-wrap:wrap; gap:8px; }
+        .jam-chip { position:relative; }
+        .jam-chip input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
+        .jam-chip span { display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:10px; border:1.5px solid #e2e8f0; font-size:13px; font-weight:600; color:#475569; background:#fff; transition:.2s; user-select:none; }
+        .jam-chip input:checked + span { background:#0f2b4b; border-color:#0f2b4b; color:#fff; }
+        .upload-box { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; padding:14px 16px; background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:12px; }
+        .upload-box .upload-hint { font-size:12.5px; color:#64748b; flex:1; min-width:180px; }
+        .upload-summary { font-size:13px; color:#16a34a; font-weight:600; margin-left:4px; }
 
         #toast { position:fixed; bottom:30px; right:30px; background:#0f2b4b; color:#fff; padding:14px 24px; border-radius:12px; font-weight:500; box-shadow:0 8px 30px rgba(0,0,0,0.2); transform:translateY(80px); opacity:0; transition:all .4s ease; z-index:9999; max-width:420px; display:flex; align-items:center; gap:12px; }
         #toast.show { transform:translateY(0); opacity:1; }
@@ -181,6 +191,7 @@
         <a data-page="agenda"><i class="fas fa-calendar-alt"></i> Agenda Kelas</a>
         <a data-page="presensi"><i class="fas fa-clipboard-check"></i> Presensi</a>
         <a data-page="modul"><i class="fas fa-book-open"></i> Modul Ajar</a>
+        <a data-page="kelas"><i class="fas fa-chalkboard"></i> Data Kelas</a>
         <a data-page="siswa"><i class="fas fa-users"></i> Data Siswa</a>
         <div class="nav-label">Laporan</div>
         <a data-page="laporan"><i class="fas fa-file-alt"></i> Laporan Bulanan</a>
@@ -229,10 +240,40 @@
             <div class="card-title"><i class="fas fa-plus-circle"></i> Tambah Agenda</div>
             <form id="agendaForm">
                 <div class="form-grid">
-                    <div class="form-group"><label>Hari, Tanggal</label><input type="text" id="fHariTanggal" placeholder="Senin, 2 Februari 2026" required /></div>
-                    <div class="form-group"><label>Jam ke</label><input type="text" id="fJamKe" placeholder="1-2" required /></div>
-                    <div class="form-group"><label>Nama Pengajar</label><input type="text" id="fPengajar" placeholder="Indah Fitri Sani, M.Si., Gr." required /></div>
-                    <div class="form-group"><label>Mata Pelajaran</label><input type="text" id="fMapel" placeholder="Science" required /></div>
+                    <div class="form-group"><label>Tanggal</label><input type="date" id="fTanggal" required /></div>
+                    <div class="form-group"><label>Hari</label><input type="text" id="fHari" readonly placeholder="Otomatis terisi" /></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>Jam ke</label>
+                        <div class="jam-checkbox-group" id="jamKeGroup">
+                            <label class="jam-chip"><input type="checkbox" value="1" class="fJamKeItem" /><span>1</span></label>
+                            <label class="jam-chip"><input type="checkbox" value="2" class="fJamKeItem" /><span>2</span></label>
+                            <label class="jam-chip"><input type="checkbox" value="3" class="fJamKeItem" /><span>3</span></label>
+                            <label class="jam-chip"><input type="checkbox" value="4" class="fJamKeItem" /><span>4</span></label>
+                            <label class="jam-chip"><input type="checkbox" value="5" class="fJamKeItem" /><span>5</span></label>
+                            <label class="jam-chip"><input type="checkbox" value="6" class="fJamKeItem" /><span>6</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Nama Pengajar</label>
+                        <select id="fPengajar" required>
+                            <option value="">-- Pilih Pengajar --</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Mata Pelajaran</label>
+                        <select id="fMapel" required>
+                            <option value="">-- Pilih Mata Pelajaran --</option>
+                            <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+                            <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Ilmu Pengetahuan Alam">Ilmu Pengetahuan Alam</option>
+                            <option value="Ilmu Pengetahuan Sosial">Ilmu Pengetahuan Sosial</option>
+                            <option value="Bahasa Inggris">Bahasa Inggris</option>
+                            <option value="Pendidikan Jasmani Olahraga dan Kesehatan">Pendidikan Jasmani Olahraga dan Kesehatan</option>
+                            <option value="Informatika">Informatika</option>
+                            <option value="Prakarya">Prakarya</option>
+                            <option value="Bahasa Jawa">Bahasa Jawa</option>
+                            <option value="Bahasa Arab">Bahasa Arab</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Siklus Inkuiri</label>
                         <select id="fSiklus">
                             <option value="Tuning in">Tuning in</option><option value="Finding out">Finding out</option>
@@ -241,7 +282,7 @@
                             <option value="End of Unit">End of Unit</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Aktivitas</label><input type="text" id="fAktivitas" placeholder="Perubahan zat dalam kehidupan..." required /></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>Aktivitas</label><input type="text" id="fAktivitas" placeholder="Tuliskan aktivitas pembelajaran..." required /></div>
                     <div class="form-group"><label>Hadir</label><input type="number" id="fHadir" value="0" min="0" /></div>
                     <div class="form-group"><label>Izin</label><input type="number" id="fIzin" value="0" min="0" /></div>
                     <div class="form-group"><label>Sakit</label><input type="number" id="fSakit" value="0" min="0" /></div>
@@ -276,12 +317,12 @@
             <div class="card-title"><i class="fas fa-user-check"></i> Rekap Presensi Harian</div>
             <div class="form-row">
                 <div class="form-group"><label>Tanggal</label><input type="date" id="presensiDate" /></div>
-                <div class="form-group"><label>Kelas</label><select id="presensiKelas"><option value="VII">VII</option></select></div>
+                <div class="form-group"><label>Kelas</label><select id="presensiKelas"></select></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadPresensi()"><i class="fas fa-search"></i> Tampilkan</button></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-success" onclick="simpanPresensi()"><i class="fas fa-save"></i> Simpan Presensi</button></div>
             </div>
             <div class="table-wrapper mt-8">
-                <table><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Status</th><th>Keterangan</th></tr></thead>
+                <table><thead><tr><th>No</th><th>NISN</th><th>Nama Siswa</th><th>Status</th><th>Keterangan</th></tr></thead>
                 <tbody id="presensiTableBody"><tr><td colspan="5" class="text-center text-muted">Pilih tanggal dan klik tampilkan</td></tr></tbody>
             </table>
             </div>
@@ -296,7 +337,7 @@
                 <div class="form-grid">
                     <div class="form-group"><label>Judul Modul</label><input type="text" id="fModulJudul" placeholder="Bab Zat dan Perubahannya" required /></div>
                     <div class="form-group"><label>Mata Pelajaran</label><input type="text" id="fModulMapel" placeholder="Science" required /></div>
-                    <div class="form-group"><label>Kelas</label><select id="fModulKelas"><option value="VII">VII</option></select></div>
+                    <div class="form-group"><label>Kelas</label><select id="fModulKelas"></select></div>
                     <div class="form-group"><label>Semester</label><select id="fModulSemester"><option value="Genap">Genap</option><option value="Ganjil">Ganjil</option></select></div>
                     <div class="form-group" style="grid-column:1/-1;"><label>Deskripsi / Materi</label><textarea id="fModulDeskripsi" placeholder="Deskripsi singkat modul..." rows="3"></textarea></div>
                 </div>
@@ -315,15 +356,53 @@
         </div>
     </div>
 
+    <!-- DATA KELAS -->
+    <div class="page-content" id="page-kelas">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-plus-circle"></i> Tambah Kelas</div>
+            <div class="upload-box">
+                <button class="btn btn-outline" onclick="downloadTemplateKelas()"><i class="fas fa-file-download"></i> Unduh Template</button>
+                <label class="btn btn-success" style="margin:0;cursor:pointer;">
+                    <i class="fas fa-file-upload"></i> Upload Template
+                    <input type="file" id="kelasFileInput" accept=".xlsx,.xls,.csv" style="display:none;" />
+                </label>
+                <span class="upload-hint">Unduh template, isi kolom "Nama Kelas" (contoh: VII-A), lalu upload kembali untuk menambahkan banyak kelas sekaligus.</span>
+                <span class="upload-summary" id="kelasUploadSummary"></span>
+            </div>
+            <form id="kelasForm">
+                <div class="form-row">
+                    <div class="form-group"><label>Nama Kelas</label><input type="text" id="fKelasNama" placeholder="VII-A" required /></div>
+                    <div class="form-group"><label>&nbsp;</label><button type="submit" class="btn btn-primary" id="kelasSubmitBtn"><i class="fas fa-save"></i> Simpan Kelas</button></div>
+                </div>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-chalkboard"></i> Daftar Kelas</div>
+            <div class="table-wrapper">
+                <table><thead><tr><th>Nama Kelas</th><th>Aksi</th></tr></thead>
+                <tbody id="kelasTableBody"></tbody></table>
+            </div>
+        </div>
+    </div>
+
     <!-- SISWA -->
     <div class="page-content" id="page-siswa">
         <div class="card">
             <div class="card-title"><i class="fas fa-user-plus"></i> Tambah Siswa</div>
+            <div class="upload-box">
+                <button class="btn btn-outline" onclick="downloadTemplateSiswa()"><i class="fas fa-file-download"></i> Unduh Template</button>
+                <label class="btn btn-success" style="margin:0;cursor:pointer;">
+                    <i class="fas fa-file-upload"></i> Upload Template
+                    <input type="file" id="siswaFileInput" accept=".xlsx,.xls,.csv" style="display:none;" />
+                </label>
+                <span class="upload-hint">Unduh template, isi kolom NISN, Nama, Kelas, Gender (L/P), lalu upload kembali untuk update data siswa secara massal.</span>
+                <span class="upload-summary" id="siswaUploadSummary"></span>
+            </div>
             <form id="siswaForm">
                 <div class="form-grid">
-                    <div class="form-group"><label>NIS</label><input type="text" id="fSiswaNis" placeholder="2025001" required /></div>
+                    <div class="form-group"><label>NISN</label><input type="text" id="fSiswaNis" placeholder="2025001" required /></div>
                     <div class="form-group"><label>Nama Lengkap</label><input type="text" id="fSiswaNama" placeholder="Ahmad Fauzi" required /></div>
-                    <div class="form-group"><label>Kelas</label><select id="fSiswaKelas"><option value="VII">VII</option></select></div>
+                    <div class="form-group"><label>Kelas</label><select id="fSiswaKelas"></select></div>
                     <div class="form-group"><label>Jenis Kelamin</label><select id="fSiswaGender"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
                 </div>
                 <div class="form-actions">
@@ -335,7 +414,7 @@
         <div class="card">
             <div class="card-title"><i class="fas fa-users"></i> Daftar Siswa</div>
             <div class="table-wrapper">
-                <table><thead><tr><th>NIS</th><th>Nama</th><th>Kelas</th><th>Gender</th><th>Aksi</th></tr></thead>
+                <table><thead><tr><th>NISN</th><th>Nama</th><th>Kelas</th><th>Gender</th><th>Aksi</th></tr></thead>
                 <tbody id="siswaTableBody"></tbody></table>
             </div>
         </div>
@@ -408,7 +487,7 @@
 // ================================================================
 //  URL BACKEND (sudah diisi dengan URL deploy Anda)
 // ================================================================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyimpAEnrszgXoBzJ8adCaBoQaNvBSWoNwZnxPIDJGYIzA_lKph0ScLYQJBSrlbPDZSFw/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw4zDPCB2s1XFf7IQTJv1SF9XcpLXUeSJi0MBQN53JEQQgUAjQHoLEaDrEDc9la2tSx/exec';
 
 let authToken = sessionStorage.getItem('authToken') || '';
 let currentUser = sessionStorage.getItem('currentUser') || '';
@@ -497,6 +576,8 @@ function initApp() {
     }
 
     setCurrentDate();
+    loadKelas();
+    loadGuruList();
     loadAgenda();
     loadSiswa();
     loadModul();
@@ -522,7 +603,15 @@ function initApp() {
     document.getElementById('agendaForm').addEventListener('submit', handleAgendaSubmit);
     document.getElementById('modulForm').addEventListener('submit', handleModulSubmit);
     document.getElementById('siswaForm').addEventListener('submit', handleSiswaSubmit);
+    document.getElementById('kelasForm').addEventListener('submit', handleKelasSubmit);
     document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
+
+    document.getElementById('fTanggal').addEventListener('change', function() {
+        document.getElementById('fHari').value = tanggalKeHariIndo(this.value);
+    });
+
+    document.getElementById('siswaFileInput').addEventListener('change', handleSiswaFileUpload);
+    document.getElementById('kelasFileInput').addEventListener('change', handleKelasFileUpload);
 
     document.getElementById('searchAgenda').addEventListener('input', function() {
         renderAgendaTable(this.value);
@@ -544,9 +633,9 @@ function navigateTo(page) {
     if (target) target.classList.add('active');
 
     const titles = { dashboard:'Dashboard', agenda:'Agenda Kelas', presensi:'Presensi Siswa',
-                     modul:'Modul Ajar', siswa:'Data Siswa', laporan:'Laporan Bulanan', users:'Kelola Pengguna' };
+                     modul:'Modul Ajar', kelas:'Data Kelas', siswa:'Data Siswa', laporan:'Laporan Bulanan', users:'Kelola Pengguna' };
     const icons = { dashboard:'chart-pie', agenda:'calendar-alt', presensi:'clipboard-check',
-                    modul:'book-open', siswa:'users', laporan:'file-alt', users:'user-cog' };
+                    modul:'book-open', kelas:'chalkboard', siswa:'users', laporan:'file-alt', users:'user-cog' };
     document.getElementById('pageTitle').innerHTML =
         `<i class="fas fa-${icons[page] || 'file'}"></i> ${titles[page] || page}`;
 
@@ -554,6 +643,7 @@ function navigateTo(page) {
     if (page === 'agenda') loadAgenda();
     if (page === 'siswa') loadSiswa();
     if (page === 'modul') loadModul();
+    if (page === 'kelas') loadKelas();
     if (page === 'users' && currentRole === 'admin') loadUsers();
 
     document.getElementById('sidebar').classList.remove('open');
@@ -589,6 +679,23 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) { 
 //  AGENDA
 // ================================================================
 let agendaData = [];
+
+const HARI_INDO = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const BULAN_INDO = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+// dateStr format: YYYY-MM-DD (dari <input type="date">)
+function tanggalKeHariIndo(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    return HARI_INDO[dateObj.getDay()];
+}
+
+function formatTanggalIndo(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return `${tanggalKeHariIndo(dateStr)}, ${d} ${BULAN_INDO[m-1]} ${y}`;
+}
 
 function loadAgenda() {
     callApi('getAgenda', {}, function(err, data) {
@@ -647,9 +754,16 @@ function siklusClass(val) {
 function handleAgendaSubmit(e) {
     e.preventDefault();
     const id = document.getElementById('fEditId').value;
+    const tanggalISO = document.getElementById('fTanggal').value;
+    const jamKe = Array.from(document.querySelectorAll('.fJamKeItem:checked')).map(el => el.value).join(',');
+
+    if (!tanggalISO) { showToast('Pilih tanggal terlebih dahulu', 'error'); return; }
+    if (!jamKe) { showToast('Pilih minimal satu jam ke', 'error'); return; }
+
     const payload = {
-        hariTanggal: document.getElementById('fHariTanggal').value.trim(),
-        jamKe: document.getElementById('fJamKe').value.trim(),
+        hariTanggal: formatTanggalIndo(tanggalISO),
+        tanggalISO: tanggalISO,
+        jamKe: jamKe,
         pengajar: document.getElementById('fPengajar').value.trim(),
         mapel: document.getElementById('fMapel').value.trim(),
         siklus: document.getElementById('fSiklus').value,
@@ -674,6 +788,7 @@ function handleAgendaSubmit(e) {
         showToast(id ? 'Agenda diperbarui' : 'Agenda ditambahkan');
         document.getElementById('agendaForm').reset();
         document.getElementById('fEditId').value = '';
+        document.getElementById('fHari').value = '';
         document.getElementById('fHadir').value = 0;
         document.getElementById('fIzin').value = 0;
         document.getElementById('fSakit').value = 0;
@@ -685,8 +800,11 @@ function handleAgendaSubmit(e) {
 function editAgenda(id) {
     const item = agendaData.find(d => d.id === id);
     if (!item) return;
-    document.getElementById('fHariTanggal').value = item.hariTanggal||'';
-    document.getElementById('fJamKe').value = item.jamKe||'';
+    document.getElementById('fTanggal').value = item.tanggalISO || '';
+    document.getElementById('fHari').value = item.tanggalISO ? tanggalKeHariIndo(item.tanggalISO) : (item.hariTanggal||'').split(',')[0]||'';
+    document.querySelectorAll('.fJamKeItem').forEach(el => {
+        el.checked = (item.jamKe||'').split(',').map(v=>v.trim()).includes(el.value);
+    });
     document.getElementById('fPengajar').value = item.pengajar||'';
     document.getElementById('fMapel').value = item.mapel||'';
     document.getElementById('fSiklus').value = item.siklus||'Tuning in';
@@ -707,6 +825,131 @@ function deleteAgenda(id) {
         showToast('Agenda dihapus');
         loadAgenda();
     });
+}
+
+function loadGuruList() {
+    callApi('getGuruList', {}, function(err, data) {
+        if (err) return;
+        const select = document.getElementById('fPengajar');
+        const currentVal = select.value;
+        const list = data || [];
+        select.innerHTML = '<option value="">-- Pilih Pengajar --</option>' +
+            list.map(g => `<option value="${g.nama_lengkap}">${g.nama_lengkap}</option>`).join('');
+        if (currentVal) select.value = currentVal;
+    });
+}
+
+// ================================================================
+//  DATA KELAS
+// ================================================================
+let kelasData = [];
+
+function loadKelas() {
+    callApi('getKelas', {}, function(err, data) {
+        if (err) return;
+        kelasData = data || [];
+        renderKelasTable();
+        populateKelasDropdowns();
+    });
+}
+
+function renderKelasTable() {
+    const tbody = document.getElementById('kelasTableBody');
+    if (!tbody) return;
+    if (!kelasData.length) {
+        tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">Belum ada data kelas</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = kelasData.map(item => `
+        <tr>
+            <td>${item.namaKelas||'-'}</td>
+            <td><button class="btn-icon danger" onclick="deleteKelas(${item.id})"><i class="fas fa-trash-alt"></i></button></td>
+        </tr>
+    `).join('');
+}
+
+// Isi ulang semua dropdown kelas (Data Siswa, Presensi, Modul) sambil mempertahankan pilihan yang sedang aktif
+function populateKelasDropdowns() {
+    const selectIds = ['fSiswaKelas', 'presensiKelas', 'fModulKelas'];
+    const options = kelasData.map(k => `<option value="${k.namaKelas}">${k.namaKelas}</option>`).join('');
+    selectIds.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = options || '<option value="">-- Belum ada kelas --</option>';
+        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) select.value = currentVal;
+    });
+}
+
+function handleKelasSubmit(e) {
+    e.preventDefault();
+    const payload = { namaKelas: document.getElementById('fKelasNama').value.trim() };
+    const btn = document.getElementById('kelasSubmitBtn');
+    btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
+    btn.disabled = true;
+    callApi('addKelas', payload, function(err) {
+        btn.innerHTML = '<i class="fas fa-save"></i> Simpan Kelas';
+        btn.disabled = false;
+        if (err) { showToast(err.message || 'Gagal simpan kelas', 'error'); return; }
+        showToast('Kelas ditambahkan');
+        document.getElementById('kelasForm').reset();
+        loadKelas();
+    });
+}
+
+function deleteKelas(id) {
+    if (!confirm('Yakin ingin menghapus kelas ini? Data siswa yang sudah memakai kelas ini tidak akan otomatis berubah.')) return;
+    callApi('deleteKelas', { id }, function(err) {
+        if (err) { showToast('Gagal hapus', 'error'); return; }
+        showToast('Kelas dihapus');
+        loadKelas();
+    });
+}
+
+function downloadTemplateKelas() {
+    const wsData = [['Nama Kelas'], ['VII-A'], ['VII-B']];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template Kelas');
+    XLSX.writeFile(wb, 'Template_Data_Kelas.xlsx');
+}
+
+function handleKelasFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const summaryEl = document.getElementById('kelasUploadSummary');
+    summaryEl.textContent = 'Memproses file...';
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            const wb = XLSX.read(evt.target.result, { type: 'binary' });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+            const namaKelasRows = rows.map(r => {
+                const key = Object.keys(r).find(k => k.trim().toLowerCase() === 'nama kelas');
+                return key ? String(r[key]).trim() : '';
+            }).filter(Boolean);
+
+            if (!namaKelasRows.length) {
+                summaryEl.textContent = '';
+                showToast('File kosong atau kolom "Nama Kelas" tidak ditemukan', 'error');
+                return;
+            }
+
+            callApi('bulkUploadKelas', { rows: namaKelasRows }, function(err, result) {
+                if (err) { summaryEl.textContent = ''; showToast('Gagal upload: ' + err.message, 'error'); return; }
+                summaryEl.textContent = `${result.added} kelas ditambahkan, ${result.skipped} dilewati (sudah ada).`;
+                showToast('Upload data kelas berhasil');
+                loadKelas();
+            });
+        } catch (err) {
+            summaryEl.textContent = '';
+            showToast('Gagal membaca file: ' + err.message, 'error');
+        }
+        e.target.value = '';
+    };
+    reader.readAsBinaryString(file);
 }
 
 // ================================================================
@@ -767,6 +1010,63 @@ function deleteSiswa(id) {
         showToast('Siswa dihapus');
         loadSiswa();
     });
+}
+
+function downloadTemplateSiswa() {
+    const wsData = [['NISN', 'Nama', 'Kelas', 'Gender'], ['2025001', 'Ahmad Fauzi', 'VII-A', 'L'], ['2025002', 'Siti Aisyah', 'VII-A', 'P']];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template Siswa');
+    XLSX.writeFile(wb, 'Template_Data_Siswa.xlsx');
+}
+
+function handleSiswaFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const summaryEl = document.getElementById('siswaUploadSummary');
+    summaryEl.textContent = 'Memproses file...';
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            const wb = XLSX.read(evt.target.result, { type: 'binary' });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+            const findKey = (obj, names) => Object.keys(obj).find(k => names.includes(k.trim().toLowerCase()));
+
+            const mapped = rows.map(r => {
+                const nisKey = findKey(r, ['nisn', 'nis']);
+                const namaKey = findKey(r, ['nama', 'nama lengkap']);
+                const kelasKey = findKey(r, ['kelas']);
+                const genderKey = findKey(r, ['gender', 'jenis kelamin']);
+                return {
+                    nis: nisKey ? String(r[nisKey]).trim() : '',
+                    nama: namaKey ? String(r[namaKey]).trim() : '',
+                    kelas: kelasKey ? String(r[kelasKey]).trim() : '',
+                    gender: genderKey ? String(r[genderKey]).trim() : ''
+                };
+            }).filter(r => r.nis && r.nama);
+
+            if (!mapped.length) {
+                summaryEl.textContent = '';
+                showToast('File kosong atau kolom NISN/Nama tidak ditemukan', 'error');
+                return;
+            }
+
+            callApi('bulkUploadSiswa', { rows: mapped }, function(err, result) {
+                if (err) { summaryEl.textContent = ''; showToast('Gagal upload: ' + err.message, 'error'); return; }
+                summaryEl.textContent = `${result.added} ditambahkan, ${result.updated} diperbarui, ${result.skipped} dilewati.`;
+                showToast('Upload data siswa berhasil');
+                loadSiswa();
+            });
+        } catch (err) {
+            summaryEl.textContent = '';
+            showToast('Gagal membaca file: ' + err.message, 'error');
+        }
+        e.target.value = '';
+    };
+    reader.readAsBinaryString(file);
 }
 
 // ================================================================
