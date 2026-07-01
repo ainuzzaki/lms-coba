@@ -11,7 +11,7 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
         body { background:#f4f7fc; min-height:100vh; color:#1e293b; display:flex; flex-direction:column; }
 
-        #loginPage { display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2b4b,#1a3a5f); padding:20px; }
+        #loginPage { display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2b4b,#1a3a5f); padding:20px; padding-bottom:56px; box-sizing:border-box; }
         .login-box { background:#fff; padding:40px 36px; border-radius:24px; max-width:400px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.3); text-align:center; }
         .login-box .logo-icon { font-size:60px; color:#0f2b4b; margin-bottom:10px; }
         .login-box h2 { color:#0f2b4b; margin-bottom:4px; }
@@ -39,7 +39,7 @@
         .sidebar-footer { margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06); font-size:12px; color:#64748b; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
         .sidebar-footer span { color:#94a3b8; }
 
-        .main-content { margin-left:260px; flex:1; padding:28px 36px 20px 36px; min-height:100vh; display:none; flex-direction:column; }
+        .main-content { margin-left:260px; flex:1; padding:28px 36px 56px 36px; min-height:100vh; display:none; flex-direction:column; }
         .page-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:28px; background:#fff; padding:18px 24px; border-radius:16px; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
         .page-header h1 { font-size:22px; font-weight:700; color:#0f2b4b; display:flex; align-items:center; gap:12px; }
         .page-header h1 i { color:#facc15; }
@@ -132,7 +132,7 @@
         .modal-box .close-modal { margin-left:auto; background:none; border:none; font-size:24px; color:#94a3b8; cursor:pointer; }
         .modal-box .close-modal:hover { color:#0f2b4b; }
 
-        .app-footer { margin-top:auto; padding:16px 0 8px; border-top:1px solid #e9edf2; text-align:center; font-size:13px; color:#64748b; }
+        .app-footer { position:fixed; left:0; right:0; bottom:0; width:100%; margin:0; padding:10px 16px; border-top:1px solid #e2e8f0; text-align:center; font-size:12.5px; color:#64748b; background:rgba(255,255,255,0.95); backdrop-filter:blur(6px); z-index:1200; }
         .app-footer span { font-weight:600; color:#0f2b4b; }
 
         @media (max-width:820px) {
@@ -199,11 +199,6 @@
         <a data-page="users" id="userMenuLink" style="display:none;"><i class="fas fa-user-cog"></i> Kelola Pengguna</a>
         <div style="margin-top:8px;"><a id="logoutBtn" style="color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
     </nav>
-    <div class="sidebar-footer">
-        <i class="fas fa-calendar-check"></i>
-        <span>Tahun Ajaran 2025/2026</span>
-        <span style="margin-left:auto;font-size:11px;color:#475569;" id="sheetStatus">●</span>
-    </div>
 </aside>
 
 <!-- MAIN -->
@@ -473,12 +468,12 @@
             </div>
         </div>
     </div>
-
-    <!-- FOOTER -->
-    <footer class="app-footer">
-        &copy; SMP Islam Moetiah 2026 · Dikembangkan oleh <span>Abdal Ainuz Zaki, B.A.</span>
-    </footer>
 </main>
+
+<!-- FOOTER (selalu tampil, termasuk di halaman login) -->
+<footer class="app-footer">
+    &copy; SMP Islam Moetiah 2026 · Dikembangkan oleh <span>Abdal Ainuz Zaki, B.A.</span>
+</footer>
 
 <!-- TOAST & MODAL -->
 <div id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Berhasil</span></div>
@@ -624,7 +619,6 @@ function initApp() {
     });
 
     document.getElementById('presensiDate').value = new Date().toISOString().split('T')[0];
-    checkSheetStatus();
 }
 
 // ================================================================
@@ -1448,19 +1442,6 @@ function deleteUser(id) {
 // ================================================================
 //  SHEET STATUS
 // ================================================================
-function checkSheetStatus() {
-    callApi('getSheetStatus', {}, function(err, status) {
-        const el = document.getElementById('sheetStatus');
-        if (err) {
-            el.textContent = '● offline';
-            el.style.color = '#f87171';
-        } else {
-            el.textContent = '● ' + status;
-            el.style.color = '#4ade80';
-        }
-    });
-}
-
 // ================================================================
 //  CEK SESSION SAAT LOAD
 // ================================================================
