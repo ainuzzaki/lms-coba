@@ -274,6 +274,11 @@
                             <option value="Bahasa Arab">Bahasa Arab</option>
                         </select>
                     </div>
+                    <div class="form-group"><label>Kelas</label>
+                        <select id="fAgendaKelas" required>
+                            <option value="">-- Pilih Kelas --</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Siklus Inkuiri</label>
                         <select id="fSiklus">
                             <option value="Tuning in">Tuning in</option><option value="Finding out">Finding out</option>
@@ -304,7 +309,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>No</th><th>Hari, Tanggal</th><th>Jam</th><th>Pengajar</th><th>Mapel</th><th>Siklus</th><th>Aktivitas</th><th>H</th><th>I</th><th>S</th><th>A</th><th>Catatan</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>No</th><th>Hari, Tanggal</th><th>Jam</th><th>Kelas</th><th>Pengajar</th><th>Mapel</th><th>Siklus</th><th>Aktivitas</th><th>H</th><th>I</th><th>S</th><th>A</th><th>Catatan</th><th>Aksi</th></tr></thead>
                     <tbody id="agendaTableBody"></tbody>
                 </table>
             </div>
@@ -373,6 +378,7 @@
                 <div class="form-row">
                     <div class="form-group"><label>Nama Kelas</label><input type="text" id="fKelasNama" placeholder="VII-A" required /></div>
                     <div class="form-group"><label>&nbsp;</label><button type="submit" class="btn btn-primary" id="kelasSubmitBtn"><i class="fas fa-save"></i> Simpan Kelas</button></div>
+                    <input type="hidden" id="fKelasEditId" value="" />
                 </div>
             </form>
         </div>
@@ -487,7 +493,7 @@
 // ================================================================
 //  URL BACKEND (sudah diisi dengan URL deploy Anda)
 // ================================================================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyimpAEnrszgXoBzJ8adCaBoQaNvBSWoNwZnxPIDJGYIzA_lKph0ScLYQJBSrlbPDZSFw/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw4zDPCB2s1XFf7IQTJv1SF9XcpLXUeSJi0MBQN53JEQQgUAjQHoLEaDrEDc9la2tSx/exec';
 
 let authToken = sessionStorage.getItem('authToken') || '';
 let currentUser = sessionStorage.getItem('currentUser') || '';
@@ -713,13 +719,14 @@ function renderAgendaTable(search='') {
         const q = search.toLowerCase();
         filtered = agendaData.filter(item =>
             (item.hariTanggal||'').toLowerCase().includes(q) ||
+            (item.kelas||'').toLowerCase().includes(q) ||
             (item.pengajar||'').toLowerCase().includes(q) ||
             (item.mapel||'').toLowerCase().includes(q) ||
             (item.aktivitas||'').toLowerCase().includes(q)
         );
     }
     if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="13" class="text-center text-muted" style="padding:30px;">Belum ada data agenda</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" class="text-center text-muted" style="padding:30px;">Belum ada data agenda</td></tr>`;
         return;
     }
     tbody.innerHTML = filtered.map((item, idx) => `
@@ -727,6 +734,7 @@ function renderAgendaTable(search='') {
             <td>${idx+1}</td>
             <td>${item.hariTanggal||'-'}</td>
             <td>${item.jamKe||'-'}</td>
+            <td>${item.kelas||'-'}</td>
             <td>${item.pengajar||'-'}</td>
             <td>${item.mapel||'-'}</td>
             <td><span class="siklus-badge ${siklusClass(item.siklus)}">${item.siklus||'-'}</span></td>
@@ -764,6 +772,7 @@ function handleAgendaSubmit(e) {
         hariTanggal: formatTanggalIndo(tanggalISO),
         tanggalISO: tanggalISO,
         jamKe: jamKe,
+        kelas: document.getElementById('fAgendaKelas').value,
         pengajar: document.getElementById('fPengajar').value.trim(),
         mapel: document.getElementById('fMapel').value.trim(),
         siklus: document.getElementById('fSiklus').value,
@@ -805,6 +814,7 @@ function editAgenda(id) {
     document.querySelectorAll('.fJamKeItem').forEach(el => {
         el.checked = (item.jamKe||'').split(',').map(v=>v.trim()).includes(el.value);
     });
+    document.getElementById('fAgendaKelas').value = item.kelas||'';
     document.getElementById('fPengajar').value = item.pengajar||'';
     document.getElementById('fMapel').value = item.mapel||'';
     document.getElementById('fSiklus').value = item.siklus||'Tuning in';
@@ -863,38 +873,63 @@ function renderKelasTable() {
     tbody.innerHTML = kelasData.map(item => `
         <tr>
             <td>${item.namaKelas||'-'}</td>
-            <td><button class="btn-icon danger" onclick="deleteKelas(${item.id})"><i class="fas fa-trash-alt"></i></button></td>
+            <td>
+                <button class="btn-icon" onclick="editKelas(${item.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon danger" onclick="deleteKelas(${item.id})"><i class="fas fa-trash-alt"></i></button>
+            </td>
         </tr>
     `).join('');
 }
 
 // Isi ulang semua dropdown kelas (Data Siswa, Presensi, Modul) sambil mempertahankan pilihan yang sedang aktif
 function populateKelasDropdowns() {
-    const selectIds = ['fSiswaKelas', 'presensiKelas', 'fModulKelas'];
     const options = kelasData.map(k => `<option value="${k.namaKelas}">${k.namaKelas}</option>`).join('');
-    selectIds.forEach(id => {
+
+    const plainSelectIds = ['fSiswaKelas', 'presensiKelas', 'fModulKelas'];
+    plainSelectIds.forEach(id => {
         const select = document.getElementById(id);
         if (!select) return;
         const currentVal = select.value;
         select.innerHTML = options || '<option value="">-- Belum ada kelas --</option>';
         if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) select.value = currentVal;
     });
+
+    // fAgendaKelas selalu menyertakan opsi kosong agar guru wajib memilih kelas secara sadar
+    const agendaSelect = document.getElementById('fAgendaKelas');
+    if (agendaSelect) {
+        const currentVal = agendaSelect.value;
+        agendaSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>' + options;
+        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) agendaSelect.value = currentVal;
+    }
 }
 
 function handleKelasSubmit(e) {
     e.preventDefault();
+    const editId = document.getElementById('fKelasEditId').value;
     const payload = { namaKelas: document.getElementById('fKelasNama').value.trim() };
+    const action = editId ? 'updateKelas' : 'addKelas';
+    if (editId) payload.id = parseInt(editId);
+
     const btn = document.getElementById('kelasSubmitBtn');
     btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
     btn.disabled = true;
-    callApi('addKelas', payload, function(err) {
+    callApi(action, payload, function(err) {
         btn.innerHTML = '<i class="fas fa-save"></i> Simpan Kelas';
         btn.disabled = false;
         if (err) { showToast(err.message || 'Gagal simpan kelas', 'error'); return; }
-        showToast('Kelas ditambahkan');
+        showToast(editId ? 'Kelas diperbarui' : 'Kelas ditambahkan');
         document.getElementById('kelasForm').reset();
+        document.getElementById('fKelasEditId').value = '';
         loadKelas();
     });
+}
+
+function editKelas(id) {
+    const item = kelasData.find(d => d.id === id);
+    if (!item) return;
+    document.getElementById('fKelasNama').value = item.namaKelas||'';
+    document.getElementById('fKelasEditId').value = id;
+    document.getElementById('page-kelas').scrollIntoView({ behavior: 'smooth' });
 }
 
 function deleteKelas(id) {
@@ -977,30 +1012,49 @@ function renderSiswaTable() {
             <td><span class="avatar-sm">${(item.nama||'?')[0]}</span> ${item.nama||'-'}</td>
             <td>${item.kelas||'-'}</td>
             <td>${item.gender==='L'?'Laki-laki':'Perempuan'}</td>
-            <td><button class="btn-icon danger" onclick="deleteSiswa(${item.id})"><i class="fas fa-trash-alt"></i></button></td>
+            <td>
+                <button class="btn-icon" onclick="editSiswa(${item.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon danger" onclick="deleteSiswa(${item.id})"><i class="fas fa-trash-alt"></i></button>
+            </td>
         </tr>
     `).join('');
 }
 
 function handleSiswaSubmit(e) {
     e.preventDefault();
+    const editId = document.getElementById('fSiswaEditId').value;
     const payload = {
         nis: document.getElementById('fSiswaNis').value.trim(),
         nama: document.getElementById('fSiswaNama').value.trim(),
         kelas: document.getElementById('fSiswaKelas').value,
         gender: document.getElementById('fSiswaGender').value,
     };
+    const action = editId ? 'updateSiswa' : 'addSiswa';
+    if (editId) payload.id = parseInt(editId);
+
     const btn = document.getElementById('siswaSubmitBtn');
     btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
     btn.disabled = true;
-    callApi('addSiswa', payload, function(err) {
+    callApi(action, payload, function(err) {
         btn.innerHTML = '<i class="fas fa-save"></i> Simpan Siswa';
         btn.disabled = false;
-        if (err) { showToast('Gagal simpan siswa', 'error'); return; }
-        showToast('Siswa ditambahkan');
+        if (err) { showToast(err.message || 'Gagal simpan siswa', 'error'); return; }
+        showToast(editId ? 'Siswa diperbarui' : 'Siswa ditambahkan');
         document.getElementById('siswaForm').reset();
+        document.getElementById('fSiswaEditId').value = '';
         loadSiswa();
     });
+}
+
+function editSiswa(id) {
+    const item = siswaData.find(d => d.id === id);
+    if (!item) return;
+    document.getElementById('fSiswaNis').value = item.nis||'';
+    document.getElementById('fSiswaNama').value = item.nama||'';
+    document.getElementById('fSiswaKelas').value = item.kelas||'';
+    document.getElementById('fSiswaGender').value = item.gender||'L';
+    document.getElementById('fSiswaEditId').value = id;
+    document.getElementById('page-siswa').scrollIntoView({ behavior: 'smooth' });
 }
 
 function deleteSiswa(id) {
