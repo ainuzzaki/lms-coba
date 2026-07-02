@@ -451,7 +451,9 @@
                     </select>
                 </div>
                 <div class="form-group"><label>Tahun</label><input type="number" id="laporanTahun" value="2026" /></div>
+                <div class="form-group"><label>Kelas</label><select id="laporanKelas"></select></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="generateLaporan()"><i class="fas fa-file-pdf"></i> Generate Laporan</button></div>
+                <div class="form-group"><label>&nbsp;</label><button class="btn btn-success" onclick="exportLaporanExcel()"><i class="fas fa-file-excel"></i> Export ke Excel</button></div>
             </div>
             <div id="laporanContent" style="margin-top:16px;padding:16px;background:#f8fafc;border-radius:12px;min-height:120px;"><p class="text-muted text-center">Klik "Generate Laporan" untuk menampilkan ringkasan.</p></div>
         </div>
@@ -1022,6 +1024,14 @@ function populateKelasDropdowns() {
         agendaSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>' + options;
         if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) agendaSelect.value = currentVal;
     }
+
+    // laporanKelas: opsi kosong berarti "Semua Kelas" (gabungan)
+    const laporanSelect = document.getElementById('laporanKelas');
+    if (laporanSelect) {
+        const currentVal = laporanSelect.value;
+        laporanSelect.innerHTML = '<option value="">-- Semua Kelas --</option>' + options;
+        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) laporanSelect.value = currentVal;
+    }
 }
 
 function handleKelasSubmit(e) {
@@ -1413,6 +1423,116 @@ function generateLaporan() {
         `;
         showToast(`Laporan ${bulan} ${tahun} berhasil dibuat`);
     });
+}
+
+// Ubah daftar jam ke ("1,2,3") menjadi format ringkas mirip buku agenda ("1-3")
+function formatJamKeRange(jamKeStr) {
+    if (!jamKeStr) return '-';
+    const nums = jamKeStr.split(',').map(v => parseInt(v.trim())).filter(n => !isNaN(n)).sort((a,b) => a-b);
+    if (!nums.length) return '-';
+    const ranges = [];
+    let start = nums[0], end = nums[0];
+    for (let i = 1; i < nums.length; i++) {
+        if (nums[i] === end + 1) { end = nums[i]; }
+        else { ranges.push(start === end ? `${start}` : `${start}-${end}`); start = end = nums[i]; }
+    }
+    ranges.push(start === end ? `${start}` : `${start}-${end}`);
+    return ranges.join(', ');
+}
+
+function exportLaporanExcel() {
+    const bulan = document.getElementById('laporanBulan').value;
+    const tahun = parseInt(document.getElementById('laporanTahun').value);
+    const kelasFilter = document.getElementById('laporanKelas').value;
+    const bulanIndex = BULAN_INDO.indexOf(bulan);
+
+    let rows = agendaData.filter(item => {
+        if (!item.tanggalISO) return false;
+        const parts = item.tanggalISO.split('-').map(Number);
+        const monthMatch = (parts[1] - 1) === bulanIndex && parts[0] === tahun;
+        const kelasMatch = !kelasFilter || item.kelas === kelasFilter;
+        return monthMatch && kelasMatch;
+    });
+
+    if (!rows.length) {
+        showToast('Tidak ada data agenda untuk bulan & kelas ini', 'error');
+        return;
+    }
+
+    // Urutkan berdasarkan tanggal, lalu jam ke
+    rows.sort((a, b) => {
+        if (a.tanggalISO !== b.tanggalISO) return a.tanggalISO < b.tanggalISO ? -1 : 1;
+        const jamA = parseInt((a.jamKe||'0').split(',')[0]) || 0;
+        const jamB = parseInt((b.jamKe||'0').split(',')[0]) || 0;
+        return jamA - jamB;
+    });
+
+    // Kelompokkan per hari (untuk sel "No" & "Hari, tanggal" yang digabung)
+    const groups = [];
+    rows.forEach(item => {
+        let group = groups.find(g => g.tanggalISO === item.tanggalISO);
+        if (!group) { group = { tanggalISO: item.tanggalISO, hariTanggal: item.hariTanggal, items: [] }; groups.push(group); }
+        group.items.push(item);
+    });
+
+    const isGanjil = bulanIndex >= 6; // Juli-Desember = Ganjil, Januari-Juni = Genap
+    const semester = isGanjil ? 'GANJIL' : 'GENAP';
+    const tahunAjaran = isGanjil ? `${tahun}/${tahun+1}` : `${tahun-1}/${tahun}`;
+    const judulKelas = kelasFilter ? ` KELAS ${kelasFilter}` : '';
+
+    const aoa = [
+        [`LAPORAN KEGIATAN BELAJAR MENGAJAR BULAN ${bulan.toUpperCase()}${judulKelas}`],
+        ['SMP ISLAM MOETIAH'],
+        [`SEMESTER ${semester} TAHUN AJARAN ${tahunAjaran}`],
+        [],
+        ['No', 'Hari, tanggal', 'Jam ke', 'Nama Pengajar', 'Mata Pelajaran', 'Siklus Inkuiri', 'AktivitasSiswa', 'Keterangan/Catatan', 'Hadir', 'Izin', 'Sakit', 'Alpha']
+    ];
+
+    const dayMerges = [];
+    let dayNo = 1;
+    groups.forEach(group => {
+        const startRow = aoa.length;
+        group.items.forEach((item, idx) => {
+            aoa.push([
+                idx === 0 ? dayNo : '',
+                idx === 0 ? group.hariTanggal : '',
+                formatJamKeRange(item.jamKe),
+                item.pengajar || '',
+                item.mapel || '',
+                item.siklus || '',
+                item.aktivitas || '',
+                item.keterangan || '',
+                item.hadir || 0,
+                item.izin || 0,
+                item.sakit || 0,
+                item.alpha || 0
+            ]);
+        });
+        const endRow = aoa.length - 1;
+        if (endRow > startRow) {
+            dayMerges.push({ s:{ r:startRow, c:0 }, e:{ r:endRow, c:0 } });
+            dayMerges.push({ s:{ r:startRow, c:1 }, e:{ r:endRow, c:1 } });
+        }
+        dayNo++;
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!merges'] = [
+        { s:{ r:0, c:0 }, e:{ r:0, c:11 } },
+        { s:{ r:1, c:0 }, e:{ r:1, c:11 } },
+        { s:{ r:2, c:0 }, e:{ r:2, c:11 } },
+        ...dayMerges
+    ];
+    ws['!cols'] = [
+        { wch:4 }, { wch:20 }, { wch:8 }, { wch:24 }, { wch:20 },
+        { wch:16 }, { wch:40 }, { wch:30 }, { wch:7 }, { wch:7 }, { wch:7 }, { wch:7 }
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `${bulan} ${tahun}`.substring(0, 31));
+    const namaFileKelas = kelasFilter ? `_Kelas_${kelasFilter}` : '';
+    XLSX.writeFile(wb, `Buku_Agenda${namaFileKelas}_-_${bulan}_${tahun}.xlsx`);
+    showToast('Laporan Excel berhasil diunduh');
 }
 
 // ================================================================
