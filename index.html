@@ -294,10 +294,13 @@
                         </select>
                     </div>
                     <div class="form-group" style="grid-column:1/-1;"><label>Aktivitas</label><input type="text" id="fAktivitas" placeholder="Tuliskan aktivitas pembelajaran..." required /></div>
-                    <div class="form-group"><label>Hadir</label><input type="number" id="fHadir" value="0" min="0" /></div>
-                    <div class="form-group"><label>Izin</label><input type="number" id="fIzin" value="0" min="0" /></div>
-                    <div class="form-group"><label>Sakit</label><input type="number" id="fSakit" value="0" min="0" /></div>
-                    <div class="form-group"><label>Alpha</label><input type="number" id="fAlpha" value="0" min="0" /></div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>Presensi Siswa <span id="agendaPresensiSummary" style="font-weight:400;color:#64748b;font-size:12.5px;"></span></label>
+                        <div class="table-wrapper" style="max-height:260px;overflow-y:auto;border:1.5px solid #e2e8f0;border-radius:10px;">
+                            <table><thead><tr><th>No</th><th>NISN</th><th>Nama</th><th>Status</th><th>Keterangan</th></tr></thead>
+                            <tbody id="agendaPresensiBody"><tr><td colspan="5" class="text-center text-muted" style="padding:16px;">Pilih kelas terlebih dahulu</td></tr></tbody></table>
+                        </div>
+                    </div>
                     <div class="form-group" style="grid-column:1/-1;"><label>Keterangan / Catatan</label><input type="text" id="fKeterangan" placeholder="Berjalan dengan kondusif..." /></div>
                 </div>
                 <div class="form-actions">
@@ -326,11 +329,11 @@
     <div class="page-content" id="page-presensi">
         <div class="card">
             <div class="card-title"><i class="fas fa-user-check"></i> Rekap Presensi Harian</div>
+            <p style="font-size:12.5px;color:#64748b;margin-bottom:14px;"><i class="fas fa-circle-info"></i> Presensi kini diisi otomatis lewat menu <b>Agenda Kelas</b> saat menyimpan agenda. Halaman ini hanya untuk melihat rekapnya.</p>
             <div class="form-row">
                 <div class="form-group"><label>Tanggal</label><input type="date" id="presensiDate" /></div>
                 <div class="form-group"><label>Kelas</label><select id="presensiKelas"></select></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadPresensi()"><i class="fas fa-search"></i> Tampilkan</button></div>
-                <div class="form-group"><label>&nbsp;</label><button class="btn btn-success" onclick="simpanPresensi()"><i class="fas fa-save"></i> Simpan Presensi</button></div>
             </div>
             <div class="table-wrapper mt-8">
                 <table><thead><tr><th>No</th><th>NISN</th><th>Nama Siswa</th><th>Status</th><th>Keterangan</th></tr></thead>
@@ -499,7 +502,7 @@
 // ================================================================
 //  URL BACKEND (sudah diisi dengan URL deploy Anda)
 // ================================================================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyimpAEnrszgXoBzJ8adCaBoQaNvBSWoNwZnxPIDJGYIzA_lKph0ScLYQJBSrlbPDZSFw/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw4zDPCB2s1XFf7IQTJv1SF9XcpLXUeSJi0MBQN53JEQQgUAjQHoLEaDrEDc9la2tSx/exec';
 
 let authToken = sessionStorage.getItem('authToken') || '';
 let currentUser = sessionStorage.getItem('currentUser') || '';
@@ -619,6 +622,9 @@ function initApp() {
     });
 
     document.getElementById('agendaForm').addEventListener('submit', handleAgendaSubmit);
+    document.getElementById('agendaForm').addEventListener('reset', function() {
+        setTimeout(() => loadAgendaPresensiForKelas(''), 0);
+    });
     document.getElementById('modulForm').addEventListener('submit', handleModulSubmit);
     document.getElementById('siswaForm').addEventListener('submit', handleSiswaSubmit);
     document.getElementById('kelasForm').addEventListener('submit', handleKelasSubmit);
@@ -626,6 +632,10 @@ function initApp() {
 
     document.getElementById('fTanggal').addEventListener('change', function() {
         document.getElementById('fHari').value = tanggalKeHariIndo(this.value);
+    });
+
+    document.getElementById('fAgendaKelas').addEventListener('change', function() {
+        loadAgendaPresensiForKelas(this.value);
     });
 
     document.getElementById('siswaFileInput').addEventListener('change', handleSiswaFileUpload);
@@ -696,6 +706,7 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) { 
 //  AGENDA
 // ================================================================
 let agendaData = [];
+let agendaPresensiState = []; // [{nis, nama, status, keterangan}] untuk kelas yang sedang dipilih di form
 
 const HARI_INDO = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 const BULAN_INDO = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -770,28 +781,104 @@ function siklusClass(val) {
     return map[val] || '';
 }
 
+// ----------------------------------------------------------------
+//  Checklist presensi siswa otomatis di dalam form Agenda
+// ----------------------------------------------------------------
+function loadAgendaPresensiForKelas(kelas, existingList) {
+    const tbody = document.getElementById('agendaPresensiBody');
+    if (!kelas) {
+        agendaPresensiState = [];
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:16px;">Pilih kelas terlebih dahulu</td></tr>`;
+        updateAgendaPresensiSummary();
+        return;
+    }
+    const roster = siswaData.filter(s => s.kelas === kelas);
+    if (!roster.length) {
+        agendaPresensiState = [];
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:16px;">Belum ada siswa di kelas ini. Tambahkan dulu di menu Data Siswa.</td></tr>`;
+        updateAgendaPresensiSummary();
+        return;
+    }
+    agendaPresensiState = roster.map(s => {
+        const existing = (existingList||[]).find(e => e.nis === s.nis);
+        return {
+            nis: s.nis, nama: s.nama,
+            status: existing ? existing.status : 'Hadir',
+            keterangan: existing ? existing.keterangan : ''
+        };
+    });
+    renderAgendaPresensiTable();
+}
+
+function renderAgendaPresensiTable() {
+    const tbody = document.getElementById('agendaPresensiBody');
+    tbody.innerHTML = agendaPresensiState.map((s, i) => `
+        <tr>
+            <td>${i+1}</td>
+            <td>${s.nis||'-'}</td>
+            <td>${s.nama||'-'}</td>
+            <td>
+                <select class="agenda-presensi-status" data-idx="${i}" style="padding:4px 8px;border-radius:6px;border:1.5px solid #e2e8f0;font-size:13px;">
+                    <option value="Hadir" ${s.status==='Hadir'?'selected':''}>Hadir</option>
+                    <option value="Izin" ${s.status==='Izin'?'selected':''}>Izin</option>
+                    <option value="Sakit" ${s.status==='Sakit'?'selected':''}>Sakit</option>
+                    <option value="Alpha" ${s.status==='Alpha'?'selected':''}>Alpha</option>
+                </select>
+            </td>
+            <td><input type="text" class="agenda-presensi-ket" data-idx="${i}" value="${s.keterangan||''}" placeholder="Catatan..." style="padding:4px 8px;border-radius:6px;border:1.5px solid #e2e8f0;font-size:13px;width:100%;" /></td>
+        </tr>
+    `).join('');
+
+    document.querySelectorAll('.agenda-presensi-status').forEach(el => {
+        el.addEventListener('change', function() {
+            agendaPresensiState[parseInt(this.dataset.idx)].status = this.value;
+            updateAgendaPresensiSummary();
+        });
+    });
+    document.querySelectorAll('.agenda-presensi-ket').forEach(el => {
+        el.addEventListener('input', function() {
+            agendaPresensiState[parseInt(this.dataset.idx)].keterangan = this.value;
+        });
+    });
+    updateAgendaPresensiSummary();
+}
+
+function updateAgendaPresensiSummary() {
+    const counts = { Hadir:0, Izin:0, Sakit:0, Alpha:0 };
+    agendaPresensiState.forEach(s => { counts[s.status] = (counts[s.status]||0) + 1; });
+    const el = document.getElementById('agendaPresensiSummary');
+    el.textContent = agendaPresensiState.length
+        ? `(Hadir ${counts.Hadir} · Izin ${counts.Izin} · Sakit ${counts.Sakit} · Alpha ${counts.Alpha})`
+        : '';
+}
+
 function handleAgendaSubmit(e) {
     e.preventDefault();
     const id = document.getElementById('fEditId').value;
     const tanggalISO = document.getElementById('fTanggal').value;
     const jamKe = Array.from(document.querySelectorAll('.fJamKeItem:checked')).map(el => el.value).join(',');
+    const kelas = document.getElementById('fAgendaKelas').value;
 
     if (!tanggalISO) { showToast('Pilih tanggal terlebih dahulu', 'error'); return; }
     if (!jamKe) { showToast('Pilih minimal satu jam ke', 'error'); return; }
+    if (!kelas) { showToast('Pilih kelas terlebih dahulu', 'error'); return; }
+
+    const counts = { Hadir:0, Izin:0, Sakit:0, Alpha:0 };
+    agendaPresensiState.forEach(s => { counts[s.status] = (counts[s.status]||0) + 1; });
 
     const payload = {
         hariTanggal: formatTanggalIndo(tanggalISO),
         tanggalISO: tanggalISO,
         jamKe: jamKe,
-        kelas: document.getElementById('fAgendaKelas').value,
+        kelas: kelas,
         pengajar: document.getElementById('fPengajar').value.trim(),
         mapel: document.getElementById('fMapel').value.trim(),
         siklus: document.getElementById('fSiklus').value,
         aktivitas: document.getElementById('fAktivitas').value.trim(),
-        hadir: parseInt(document.getElementById('fHadir').value)||0,
-        izin: parseInt(document.getElementById('fIzin').value)||0,
-        sakit: parseInt(document.getElementById('fSakit').value)||0,
-        alpha: parseInt(document.getElementById('fAlpha').value)||0,
+        hadir: counts.Hadir,
+        izin: counts.Izin,
+        sakit: counts.Sakit,
+        alpha: counts.Alpha,
         keterangan: document.getElementById('fKeterangan').value.trim(),
     };
     const action = id ? 'updateAgenda' : 'addAgenda';
@@ -801,19 +888,36 @@ function handleAgendaSubmit(e) {
     btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
     btn.disabled = true;
 
-    callApi(action, payload, function(err, result) {
-        btn.innerHTML = '<i class="fas fa-save"></i> Simpan Agenda';
-        btn.disabled = false;
-        if (err) { showToast('Gagal menyimpan', 'error'); return; }
-        showToast(id ? 'Agenda diperbarui' : 'Agenda ditambahkan');
-        document.getElementById('agendaForm').reset();
-        document.getElementById('fEditId').value = '';
-        document.getElementById('fHari').value = '';
-        document.getElementById('fHadir').value = 0;
-        document.getElementById('fIzin').value = 0;
-        document.getElementById('fSakit').value = 0;
-        document.getElementById('fAlpha').value = 0;
-        loadAgenda();
+    callApi(action, payload, function(err) {
+        if (err) {
+            btn.innerHTML = '<i class="fas fa-save"></i> Simpan Agenda';
+            btn.disabled = false;
+            showToast('Gagal menyimpan', 'error');
+            return;
+        }
+
+        const finishUp = (presensiErr) => {
+            btn.innerHTML = '<i class="fas fa-save"></i> Simpan Agenda';
+            btn.disabled = false;
+            if (presensiErr) {
+                showToast('Agenda tersimpan, tapi presensi gagal disimpan', 'error');
+            } else {
+                showToast(id ? 'Agenda & presensi diperbarui' : 'Agenda & presensi ditambahkan');
+            }
+            document.getElementById('agendaForm').reset();
+            document.getElementById('fEditId').value = '';
+            document.getElementById('fHari').value = '';
+            loadAgendaPresensiForKelas('');
+            loadAgenda();
+        };
+
+        if (agendaPresensiState.length) {
+            callApi('savePresensi', { tanggal: tanggalISO, kelas, data: agendaPresensiState }, function(err2) {
+                finishUp(err2);
+            });
+        } else {
+            finishUp(null);
+        }
     });
 }
 
@@ -830,12 +934,18 @@ function editAgenda(id) {
     document.getElementById('fMapel').value = item.mapel||'';
     document.getElementById('fSiklus').value = item.siklus||'Tuning in';
     document.getElementById('fAktivitas').value = item.aktivitas||'';
-    document.getElementById('fHadir').value = item.hadir||0;
-    document.getElementById('fIzin').value = item.izin||0;
-    document.getElementById('fSakit').value = item.sakit||0;
-    document.getElementById('fAlpha').value = item.alpha||0;
     document.getElementById('fKeterangan').value = item.keterangan||'';
     document.getElementById('fEditId').value = id;
+
+    // Muat ulang checklist presensi sesuai kelas & tanggal agenda yang diedit
+    if (item.kelas && item.tanggalISO) {
+        callApi('getPresensi', { tanggal: item.tanggalISO, kelas: item.kelas }, function(err, presensiList) {
+            loadAgendaPresensiForKelas(item.kelas, err ? [] : presensiList);
+        });
+    } else {
+        loadAgendaPresensiForKelas(item.kelas||'');
+    }
+
     document.getElementById('page-agenda').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1235,90 +1345,36 @@ function loadDashboardStats() {
 }
 
 // ================================================================
-//  PRESENSI
+//  PRESENSI (read-only, diisi otomatis lewat Agenda Kelas)
 // ================================================================
-let presensiData = [];
-
 function loadPresensi() {
     const date = document.getElementById('presensiDate').value;
     const kelas = document.getElementById('presensiKelas').value;
     if (!date) { showToast('Pilih tanggal terlebih dahulu', 'error'); return; }
+    if (!kelas) { showToast('Pilih kelas terlebih dahulu', 'error'); return; }
 
     callApi('getPresensi', { tanggal: date, kelas }, function(err, data) {
         if (err) { showToast('Gagal load presensi', 'error'); return; }
-        const list = data || [];
-        const tbody = document.getElementById('presensiTableBody');
-        if (!list.length) {
-            callApi('getSiswa', {}, function(err2, siswa) {
-                if (err2) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Belum ada data presensi. Silakan simpan presensi.</td></tr>`;
-                    presensiData = [];
-                    return;
-                }
-                presensiData = (siswa||[]).map(s => ({ nis:s.nis||'', nama:s.nama||'', status:'Hadir', keterangan:'' }));
-                renderPresensiTable(presensiData);
-            });
-            return;
-        }
-        presensiData = list;
-        renderPresensiTable(list);
+        renderPresensiTable(data || []);
     });
 }
 
 function renderPresensiTable(list) {
     const tbody = document.getElementById('presensiTableBody');
     if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Tidak ada data siswa</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Belum ada presensi untuk tanggal &amp; kelas ini. Isi lewat menu Agenda Kelas.</td></tr>`;
         return;
     }
+    const statusClass = { Hadir:'hadir', Izin:'izin', Sakit:'sakit', Alpha:'alpha' };
     tbody.innerHTML = list.map((s, i) => `
         <tr>
             <td>${i+1}</td>
             <td>${s.nis||'-'}</td>
             <td>${s.nama||'-'}</td>
-            <td>
-                <select class="presensi-status" data-idx="${i}" style="padding:4px 8px;border-radius:6px;border:1.5px solid #e2e8f0;font-size:13px;">
-                    <option value="Hadir" ${s.status==='Hadir'?'selected':''}>Hadir</option>
-                    <option value="Izin" ${s.status==='Izin'?'selected':''}>Izin</option>
-                    <option value="Sakit" ${s.status==='Sakit'?'selected':''}>Sakit</option>
-                    <option value="Alpha" ${s.status==='Alpha'?'selected':''}>Alpha</option>
-                </select>
-            </td>
-            <td><input type="text" class="presensi-keterangan" data-idx="${i}" value="${s.keterangan||''}" placeholder="Catatan..." style="padding:4px 8px;border-radius:6px;border:1.5px solid #e2e8f0;font-size:13px;width:100%;" /></td>
+            <td><span class="badge-status ${statusClass[s.status]||''}">${s.status||'-'}</span></td>
+            <td>${s.keterangan||'-'}</td>
         </tr>
     `).join('');
-
-    document.querySelectorAll('.presensi-status').forEach(el => {
-        el.addEventListener('change', function() {
-            const idx = parseInt(this.dataset.idx);
-            if (presensiData[idx]) presensiData[idx].status = this.value;
-        });
-    });
-    document.querySelectorAll('.presensi-keterangan').forEach(el => {
-        el.addEventListener('input', function() {
-            const idx = parseInt(this.dataset.idx);
-            if (presensiData[idx]) presensiData[idx].keterangan = this.value;
-        });
-    });
-}
-
-function simpanPresensi() {
-    const date = document.getElementById('presensiDate').value;
-    const kelas = document.getElementById('presensiKelas').value;
-    if (!date) { showToast('Pilih tanggal terlebih dahulu', 'error'); return; }
-    if (!presensiData.length) { showToast('Tidak ada data presensi untuk disimpan', 'error'); return; }
-
-    const updated = presensiData.map((item, idx) => ({
-        nis: item.nis,
-        nama: item.nama,
-        status: document.querySelector(`.presensi-status[data-idx="${idx}"]`)?.value || item.status,
-        keterangan: document.querySelector(`.presensi-keterangan[data-idx="${idx}"]`)?.value || item.keterangan,
-    }));
-
-    callApi('savePresensi', { tanggal: date, kelas, data: updated }, function(err) {
-        if (err) { showToast('Gagal simpan presensi', 'error'); return; }
-        showToast('Presensi berhasil disimpan');
-    });
 }
 
 // ================================================================
