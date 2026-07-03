@@ -504,7 +504,7 @@
 // ================================================================
 //  URL BACKEND (sudah diisi dengan URL deploy Anda)
 // ================================================================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyimpAEnrszgXoBzJ8adCaBoQaNvBSWoNwZnxPIDJGYIzA_lKph0ScLYQJBSrlbPDZSFw/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw4zDPCB2s1XFf7IQTJv1SF9XcpLXUeSJi0MBQN53JEQQgUAjQHoLEaDrEDc9la2tSx/exec';
 
 let authToken = sessionStorage.getItem('authToken') || '';
 let currentUser = sessionStorage.getItem('currentUser') || '';
@@ -794,7 +794,7 @@ function loadAgendaPresensiForKelas(kelas, existingList) {
         updateAgendaPresensiSummary();
         return;
     }
-    const roster = siswaData.filter(s => s.kelas === kelas);
+    const roster = siswaData.filter(s => String(s.kelas) === String(kelas));
     if (!roster.length) {
         agendaPresensiState = [];
         tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:16px;">Belum ada siswa di kelas ini. Tambahkan dulu di menu Data Siswa.</td></tr>`;
@@ -929,7 +929,7 @@ function editAgenda(id) {
     document.getElementById('fTanggal').value = item.tanggalISO || '';
     document.getElementById('fHari').value = item.tanggalISO ? tanggalKeHariIndo(item.tanggalISO) : (item.hariTanggal||'').split(',')[0]||'';
     document.querySelectorAll('.fJamKeItem').forEach(el => {
-        el.checked = (item.jamKe||'').split(',').map(v=>v.trim()).includes(el.value);
+        el.checked = String(item.jamKe||'').split(',').map(v=>v.trim()).includes(el.value);
     });
     document.getElementById('fAgendaKelas').value = item.kelas||'';
     document.getElementById('fPengajar').value = item.pengajar||'';
@@ -1427,8 +1427,8 @@ function generateLaporan() {
 
 // Ubah daftar jam ke ("1,2,3") menjadi format ringkas mirip buku agenda ("1-3")
 function formatJamKeRange(jamKeStr) {
-    if (!jamKeStr) return '-';
-    const nums = jamKeStr.split(',').map(v => parseInt(v.trim())).filter(n => !isNaN(n)).sort((a,b) => a-b);
+    if (jamKeStr === null || jamKeStr === undefined || jamKeStr === '') return '-';
+    const nums = String(jamKeStr).split(',').map(v => parseInt(v.trim())).filter(n => !isNaN(n)).sort((a,b) => a-b);
     if (!nums.length) return '-';
     const ranges = [];
     let start = nums[0], end = nums[0];
@@ -1463,7 +1463,7 @@ function exportLaporanExcel() {
             if (!item.tanggalISO) return false;
             const parts = item.tanggalISO.split('-').map(Number);
             const monthMatch = (parts[1] - 1) === bulanIndex && parts[0] === tahun;
-            const kelasMatch = !kelasFilter || item.kelas === kelasFilter;
+            const kelasMatch = !kelasFilter || String(item.kelas) === String(kelasFilter);
             return monthMatch && kelasMatch;
         });
 
@@ -1476,8 +1476,8 @@ function exportLaporanExcel() {
             // Urutkan berdasarkan tanggal, lalu jam ke
             rows.sort((a, b) => {
                 if (a.tanggalISO !== b.tanggalISO) return a.tanggalISO < b.tanggalISO ? -1 : 1;
-                const jamA = parseInt((a.jamKe||'0').split(',')[0]) || 0;
-                const jamB = parseInt((b.jamKe||'0').split(',')[0]) || 0;
+                const jamA = parseInt(String(a.jamKe||'0').split(',')[0]) || 0;
+                const jamB = parseInt(String(b.jamKe||'0').split(',')[0]) || 0;
                 return jamA - jamB;
             });
 
