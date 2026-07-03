@@ -198,6 +198,7 @@
         <a data-page="modul"><i class="fas fa-book-open"></i> Modul Ajar</a>
         <a data-page="kelas"><i class="fas fa-chalkboard"></i> Data Kelas</a>
         <a data-page="siswa"><i class="fas fa-users"></i> Data Siswa</a>
+        <a data-page="poin"><i class="fas fa-star"></i> Poin Siswa</a>
         <div class="nav-label">Laporan</div>
         <a data-page="laporan"><i class="fas fa-file-alt"></i> Laporan Bulanan</a>
         <div class="nav-label" id="userMenuLabel" style="display:none;">Administrasi</div>
@@ -436,6 +437,78 @@
         </div>
     </div>
 
+    <!-- POIN SISWA -->
+    <div class="page-content" id="page-poin">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-star"></i> Catat Poin Siswa</div>
+            <form id="poinForm">
+                <div class="form-grid">
+                    <div class="form-group"><label>Tanggal</label><input type="date" id="fPoinTanggal" required /></div>
+                    <div class="form-group"><label>Kelas</label>
+                        <select id="fPoinKelas" required><option value="">-- Pilih Kelas --</option></select>
+                    </div>
+                    <div class="form-group"><label>Siswa</label>
+                        <select id="fPoinSiswa" required><option value="">-- Pilih kelas dahulu --</option></select>
+                    </div>
+                    <div class="form-group"><label>Kategori</label>
+                        <select id="fPoinKategori" required><option value="">-- Pilih Kategori --</option></select>
+                    </div>
+                    <div class="form-group"><label>Poin <span id="poinTipeBadge"></span></label>
+                        <input type="number" id="fPoinNilai" min="1" placeholder="Otomatis dari kategori, bisa diubah" required />
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>Keterangan (opsional)</label><input type="text" id="fPoinKeterangan" placeholder="Detail kejadian..." /></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="poinSubmitBtn"><i class="fas fa-save"></i> Simpan Catatan</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fas fa-list-check"></i> Kategori Poin</div>
+            <p style="font-size:12.5px;color:#64748b;margin-bottom:14px;"><i class="fas fa-circle-info"></i> Poin tiap kategori bisa diubah kapan saja di sini — perubahan tidak memengaruhi catatan yang sudah tersimpan sebelumnya.</p>
+            <form id="kategoriPoinForm">
+                <div class="form-row">
+                    <div class="form-group"><label>Tipe</label>
+                        <select id="fKategoriTipe"><option value="Prestasi">Prestasi (+)</option><option value="Pelanggaran">Pelanggaran (-)</option></select>
+                    </div>
+                    <div class="form-group" style="flex:2;"><label>Nama Kategori</label><input type="text" id="fKategoriNama" placeholder="Juara 1 Lomba..." required /></div>
+                    <div class="form-group"><label>Poin</label><input type="number" id="fKategoriPoin" min="1" placeholder="50" required /></div>
+                    <div class="form-group"><label>&nbsp;</label><button type="submit" class="btn btn-primary" id="kategoriPoinSubmitBtn"><i class="fas fa-save"></i> Simpan</button></div>
+                    <input type="hidden" id="fKategoriEditId" value="" />
+                </div>
+            </form>
+            <div class="table-wrapper mt-8">
+                <table><thead><tr><th>Tipe</th><th>Nama Kategori</th><th>Poin</th><th>Aksi</th></tr></thead>
+                <tbody id="kategoriPoinTableBody"></tbody></table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fas fa-ranking-star"></i> Rekap Poin per Siswa</div>
+            <div class="form-row">
+                <div class="form-group"><label>Kelas</label><select id="rekapPoinKelas"><option value="">-- Semua Kelas --</option></select></div>
+                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadRekapPoin()"><i class="fas fa-search"></i> Tampilkan</button></div>
+            </div>
+            <div class="table-wrapper mt-8">
+                <table><thead><tr><th>Nama</th><th>Kelas</th><th>Prestasi</th><th>Pelanggaran</th><th>Poin Bersih</th></tr></thead>
+                <tbody id="rekapPoinTableBody"></tbody></table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Riwayat Catatan Poin</div>
+            <div class="form-row">
+                <div class="form-group"><label>Kelas</label><select id="riwayatPoinKelas"><option value="">-- Semua Kelas --</option></select></div>
+                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadCatatanPoin()"><i class="fas fa-search"></i> Tampilkan</button></div>
+            </div>
+            <div class="table-wrapper mt-8">
+                <table><thead><tr><th>Tanggal</th><th>Nama</th><th>Kelas</th><th>Kategori</th><th>Poin</th><th>Keterangan</th><th>Dicatat oleh</th><th>Aksi</th></tr></thead>
+                <tbody id="riwayatPoinTableBody"></tbody></table>
+            </div>
+        </div>
+    </div>
+
     <!-- LAPORAN -->
     <div class="page-content" id="page-laporan">
         <div class="card">
@@ -605,6 +678,7 @@ function initApp() {
     loadAgenda();
     loadSiswa();
     loadModul();
+    loadKategoriPoin();
     loadDashboardStats();
     if (currentRole === 'admin') loadUsers();
 
@@ -632,6 +706,21 @@ function initApp() {
     document.getElementById('siswaForm').addEventListener('submit', handleSiswaSubmit);
     document.getElementById('kelasForm').addEventListener('submit', handleKelasSubmit);
     document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
+    document.getElementById('poinForm').addEventListener('submit', handlePoinSubmit);
+    document.getElementById('kategoriPoinForm').addEventListener('submit', handleKategoriPoinSubmit);
+
+    document.getElementById('fPoinKelas').addEventListener('change', function() {
+        populatePoinSiswaDropdown(this.value);
+    });
+    document.getElementById('fPoinKategori').addEventListener('change', function() {
+        const opt = this.selectedOptions[0];
+        const badge = document.getElementById('poinTipeBadge');
+        if (!opt || !opt.value) { badge.innerHTML = ''; document.getElementById('fPoinNilai').value = ''; return; }
+        const tipe = opt.dataset.tipe;
+        document.getElementById('fPoinNilai').value = opt.dataset.poin;
+        badge.innerHTML = `<span class="badge-status ${tipe==='Prestasi'?'hadir':'sakit'}" style="font-weight:400;">${tipe}</span>`;
+    });
+    document.getElementById('fPoinTanggal').value = new Date().toISOString().split('T')[0];
 
     document.getElementById('fTanggal').addEventListener('change', function() {
         document.getElementById('fHari').value = tanggalKeHariIndo(this.value);
@@ -663,9 +752,9 @@ function navigateTo(page) {
     if (target) target.classList.add('active');
 
     const titles = { dashboard:'Dashboard', agenda:'Agenda Kelas', presensi:'Presensi Siswa',
-                     modul:'Modul Ajar', kelas:'Data Kelas', siswa:'Data Siswa', laporan:'Laporan Bulanan', users:'Kelola Pengguna' };
+                     modul:'Modul Ajar', kelas:'Data Kelas', siswa:'Data Siswa', poin:'Poin Siswa', laporan:'Laporan Bulanan', users:'Kelola Pengguna' };
     const icons = { dashboard:'chart-pie', agenda:'calendar-alt', presensi:'clipboard-check',
-                    modul:'book-open', kelas:'chalkboard', siswa:'users', laporan:'file-alt', users:'user-cog' };
+                    modul:'book-open', kelas:'chalkboard', siswa:'users', poin:'star', laporan:'file-alt', users:'user-cog' };
     document.getElementById('pageTitle').innerHTML =
         `<i class="fas fa-${icons[page] || 'file'}"></i> ${titles[page] || page}`;
 
@@ -674,6 +763,7 @@ function navigateTo(page) {
     if (page === 'siswa') loadSiswa();
     if (page === 'modul') loadModul();
     if (page === 'kelas') loadKelas();
+    if (page === 'poin') { loadKategoriPoin(); loadRekapPoin(); loadCatatanPoin(); }
     if (page === 'users' && currentRole === 'admin') loadUsers();
 
     document.getElementById('sidebar').classList.remove('open');
@@ -1018,21 +1108,23 @@ function populateKelasDropdowns() {
         if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) select.value = currentVal;
     });
 
-    // fAgendaKelas selalu menyertakan opsi kosong agar guru wajib memilih kelas secara sadar
-    const agendaSelect = document.getElementById('fAgendaKelas');
-    if (agendaSelect) {
-        const currentVal = agendaSelect.value;
-        agendaSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>' + options;
-        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) agendaSelect.value = currentVal;
-    }
+    // fAgendaKelas & fPoinKelas selalu menyertakan opsi kosong agar wajib dipilih secara sadar
+    ['fAgendaKelas', 'fPoinKelas'].forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + options;
+        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) select.value = currentVal;
+    });
 
-    // laporanKelas: opsi kosong berarti "Semua Kelas" (gabungan)
-    const laporanSelect = document.getElementById('laporanKelas');
-    if (laporanSelect) {
-        const currentVal = laporanSelect.value;
-        laporanSelect.innerHTML = '<option value="">-- Semua Kelas --</option>' + options;
-        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) laporanSelect.value = currentVal;
-    }
+    // laporanKelas, rekapPoinKelas, riwayatPoinKelas: opsi kosong berarti "Semua Kelas" (gabungan)
+    ['laporanKelas', 'rekapPoinKelas', 'riwayatPoinKelas'].forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- Semua Kelas --</option>' + options;
+        if (currentVal && kelasData.some(k => k.namaKelas === currentVal)) select.value = currentVal;
+    });
 }
 
 function handleKelasSubmit(e) {
@@ -1253,6 +1345,200 @@ function handleSiswaFileUpload(e) {
         e.target.value = '';
     };
     reader.readAsBinaryString(file);
+}
+
+// ================================================================
+//  POIN SISWA (kategori, catat, rekap, riwayat)
+// ================================================================
+let kategoriPoinData = [];
+
+function loadKategoriPoin() {
+    callApi('getKategoriPoin', {}, function(err, data) {
+        if (err) { showToast('Gagal load kategori poin', 'error'); return; }
+        kategoriPoinData = data || [];
+        renderKategoriPoinTable();
+        populateKategoriPoinDropdown();
+    });
+}
+
+function renderKategoriPoinTable() {
+    const tbody = document.getElementById('kategoriPoinTableBody');
+    if (!kategoriPoinData.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Belum ada kategori poin</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = kategoriPoinData.map(item => `
+        <tr>
+            <td><span class="badge-status ${item.tipe==='Prestasi'?'hadir':'sakit'}">${item.tipe}</span></td>
+            <td>${item.nama||'-'}</td>
+            <td>${item.tipe==='Prestasi'?'+':'-'}${item.poin}</td>
+            <td>
+                <button class="btn-icon" onclick="editKategoriPoin(${item.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon danger" onclick="deleteKategoriPoin(${item.id})"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function populateKategoriPoinDropdown() {
+    const select = document.getElementById('fPoinKategori');
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">-- Pilih Kategori --</option>' +
+        kategoriPoinData.map(k => `<option value="${k.id}" data-tipe="${k.tipe}" data-poin="${k.poin}">${k.tipe==='Prestasi'?'🟢':'🔴'} ${k.nama} (${k.tipe==='Prestasi'?'+':'-'}${k.poin})</option>`).join('');
+    if (currentVal) select.value = currentVal;
+}
+
+function handleKategoriPoinSubmit(e) {
+    e.preventDefault();
+    const editId = document.getElementById('fKategoriEditId').value;
+    const payload = {
+        tipe: document.getElementById('fKategoriTipe').value,
+        nama: document.getElementById('fKategoriNama').value.trim(),
+        poin: parseInt(document.getElementById('fKategoriPoin').value) || 0
+    };
+    const action = editId ? 'updateKategoriPoin' : 'addKategoriPoin';
+    if (editId) payload.id = parseInt(editId);
+
+    const btn = document.getElementById('kategoriPoinSubmitBtn');
+    btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
+    btn.disabled = true;
+    callApi(action, payload, function(err) {
+        btn.innerHTML = '<i class="fas fa-save"></i> Simpan';
+        btn.disabled = false;
+        if (err) { showToast(err.message || 'Gagal simpan kategori', 'error'); return; }
+        showToast(editId ? 'Kategori diperbarui' : 'Kategori ditambahkan');
+        document.getElementById('kategoriPoinForm').reset();
+        document.getElementById('fKategoriEditId').value = '';
+        loadKategoriPoin();
+    });
+}
+
+function editKategoriPoin(id) {
+    const item = kategoriPoinData.find(d => d.id === id);
+    if (!item) return;
+    document.getElementById('fKategoriTipe').value = item.tipe;
+    document.getElementById('fKategoriNama').value = item.nama;
+    document.getElementById('fKategoriPoin').value = item.poin;
+    document.getElementById('fKategoriEditId').value = id;
+    document.getElementById('page-poin').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteKategoriPoin(id) {
+    if (!confirm('Yakin ingin menghapus kategori ini? Catatan poin yang sudah memakai kategori ini tidak akan terhapus.')) return;
+    callApi('deleteKategoriPoin', { id }, function(err) {
+        if (err) { showToast('Gagal hapus', 'error'); return; }
+        showToast('Kategori dihapus');
+        loadKategoriPoin();
+    });
+}
+
+// Isi dropdown siswa sesuai kelas yang dipilih di form catat poin
+function populatePoinSiswaDropdown(kelas) {
+    const select = document.getElementById('fPoinSiswa');
+    if (!kelas) {
+        select.innerHTML = '<option value="">-- Pilih kelas dahulu --</option>';
+        return;
+    }
+    const roster = siswaData.filter(s => String(s.kelas) === String(kelas));
+    select.innerHTML = roster.length
+        ? '<option value="">-- Pilih Siswa --</option>' + roster.map(s => `<option value="${s.nis}" data-nama="${s.nama}">${s.nama} (${s.nis})</option>`).join('')
+        : '<option value="">-- Belum ada siswa di kelas ini --</option>';
+}
+
+function handlePoinSubmit(e) {
+    e.preventDefault();
+    const kelas = document.getElementById('fPoinKelas').value;
+    const siswaSelect = document.getElementById('fPoinSiswa');
+    const nis = siswaSelect.value;
+    const nama = siswaSelect.selectedOptions[0] ? siswaSelect.selectedOptions[0].dataset.nama : '';
+    const kategoriSelect = document.getElementById('fPoinKategori');
+    const kategoriOpt = kategoriSelect.selectedOptions[0];
+
+    if (!kelas) { showToast('Pilih kelas terlebih dahulu', 'error'); return; }
+    if (!nis) { showToast('Pilih siswa terlebih dahulu', 'error'); return; }
+    if (!kategoriSelect.value) { showToast('Pilih kategori terlebih dahulu', 'error'); return; }
+
+    const payload = {
+        tanggal: document.getElementById('fPoinTanggal').value || new Date().toISOString().split('T')[0],
+        kelas, nis, nama,
+        kategoriId: kategoriSelect.value,
+        kategoriNama: kategoriOpt.textContent,
+        tipe: kategoriOpt.dataset.tipe,
+        poin: parseInt(document.getElementById('fPoinNilai').value) || 0,
+        keterangan: document.getElementById('fPoinKeterangan').value.trim()
+    };
+
+    const btn = document.getElementById('poinSubmitBtn');
+    btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
+    btn.disabled = true;
+    callApi('addCatatanPoin', payload, function(err) {
+        btn.innerHTML = '<i class="fas fa-save"></i> Simpan Catatan';
+        btn.disabled = false;
+        if (err) { showToast(err.message || 'Gagal simpan catatan poin', 'error'); return; }
+        showToast('Poin berhasil dicatat');
+        document.getElementById('poinForm').reset();
+        document.getElementById('poinTipeBadge').innerHTML = '';
+        populatePoinSiswaDropdown('');
+        loadRekapPoin();
+        loadCatatanPoin();
+    });
+}
+
+function loadRekapPoin() {
+    const kelas = document.getElementById('rekapPoinKelas').value;
+    callApi('getRekapPoin', { kelas }, function(err, data) {
+        if (err) { showToast('Gagal load rekap poin', 'error'); return; }
+        const tbody = document.getElementById('rekapPoinTableBody');
+        const list = data || [];
+        if (!list.length) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Belum ada catatan poin</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = list.map(r => `
+            <tr>
+                <td>${r.nama||'-'}</td>
+                <td>${r.kelas||'-'}</td>
+                <td><span class="badge-status hadir">+${r.prestasi}</span></td>
+                <td><span class="badge-status sakit">-${r.pelanggaran}</span></td>
+                <td><strong style="color:${r.total>=0?'#16a34a':'#dc2626'};">${r.total>=0?'+':''}${r.total}</strong></td>
+            </tr>
+        `).join('');
+    });
+}
+
+function loadCatatanPoin() {
+    const kelas = document.getElementById('riwayatPoinKelas').value;
+    callApi('getCatatanPoin', { kelas }, function(err, data) {
+        if (err) { showToast('Gagal load riwayat poin', 'error'); return; }
+        const tbody = document.getElementById('riwayatPoinTableBody');
+        const list = data || [];
+        if (!list.length) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Belum ada catatan poin</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = list.map(item => `
+            <tr>
+                <td>${item.tanggal||'-'}</td>
+                <td>${item.nama||'-'}</td>
+                <td>${item.kelas||'-'}</td>
+                <td>${item.kategoriNama||'-'}</td>
+                <td><strong style="color:${item.poin>=0?'#16a34a':'#dc2626'};">${item.poin>=0?'+':''}${item.poin}</strong></td>
+                <td>${item.keterangan||'-'}</td>
+                <td>${item.dicatatOleh||'-'}</td>
+                <td><button class="btn-icon danger" onclick="deleteCatatanPoin(${item.id})"><i class="fas fa-trash-alt"></i></button></td>
+            </tr>
+        `).join('');
+    });
+}
+
+function deleteCatatanPoin(id) {
+    if (!confirm('Yakin ingin menghapus catatan poin ini?')) return;
+    callApi('deleteCatatanPoin', { id }, function(err) {
+        if (err) { showToast('Gagal hapus', 'error'); return; }
+        showToast('Catatan poin dihapus');
+        loadRekapPoin();
+        loadCatatanPoin();
+    });
 }
 
 // ================================================================
