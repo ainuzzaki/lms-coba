@@ -6,6 +6,7 @@
     <title>E-Learning SMP Islam Moetiah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAA/1BMVEXb3dyYoa8YNGRmc4ystsTRnhjj2p91iptMWndwcHIzRWkjUYnarEe6xMzox2sAdiGMrx38/Pn+wDpdXWAskVQ4RF20jEKWeUqigkmxylyXx58EPYARE1dRpHIlOD8AEPgDCJ9DTGSJcUyqqlWWlZX//wAADTkPgzh/fx+/fz9kbZwxPll+qwWqqgD/fwCjwTs5Rl1NP01xdYFEZsx8goJIkf+qVVWthjz/AAD/qlX//7/9/fwAAAAWKVP2tzQHG0cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoWQCUAAAAQHRSTlP//vn///7+//8R+v/5/////QX+YP+Y0Y6n////Df8EBAmccAMcAf//AwQen/8DAv9iJEEPJQcDvgEDCP8A/v3+VzB1tgAABphJREFUeNqFV2djozoQXBUQyOC4xfYlTi+XXH29Gcz//1dvRgIMzhV9wAa0o9nZ1WqR6s14ecXlJr/frtdFkSRFsV5v7/NbPHx9eTtb3jz5XFW3y22RHEYjKbZLYHx++RkAJuw2RbJYHE7GYlEUm11VPfwQIIf5NjkE62KaYojwOi0CxiHZ7sKk7wG8VDf3kfo0lf1oSDoNL4rNbfX6PYDXKl+HpabRWkTtbSZWiQ2308BinVdfvgkw/6daFovOXJTal8bAWDlVGiUipEGI5H7ohhzdv9l0q8NaZWovxigClKAiWYSYBjdujgjS2/++Jf00MJc9EPBrxRoxpbK8BRaokcRhe9sjtABPT7dbYsNelUqVACiHMipllDGyJwmus+4RIsDT55tgjxlWZSBuOBPrOgwFIsQQOkU/4MZie/tlCPBQ0f8ppxkKQBkggJUwrHJQEa6Jc0QmQrGpXo4AD9Afz/ZkSDOaq1Ei4IGLj61REWEZk1KCgL8yfoE/EKCgsUfbNI2/JS2hjxjcFIdFkVd/tQBfbtaLoL8zBm+FM7sxLdKiV5LYDCzEgAzr24cI8FDdh/gh3wL9TEYpnEyPNwbhQXpBSUbznk5IlT99gAOYJZDfgunQPp0myVAL+EYKJWWAE085AGIEQA4Idh88HIzpdHwPDpZy0onDpvq3kp4Acj4EerwJkyQ9QUAwqQIjkeRVLq9BgRBlPD6x38OD4mRfmz0iGXUEhVd5YghAAAFQe6XGk4skBcIYlLaKTKHC7MOThBxCCBCkUwGmDECSnELACcOEAYVkCRE3IQeRo4ziMADRLiVCMpSyVMwnEwKxnQs96PawGanXLpvEkY4oWKZ6imT6U/LgQQjBQAE5rilvEDg1CwCIgyxRRblZkH9OjkbD4BUnCJBKWDOwIw73suE2Bn879KAYp0/Lob93zAWkFFJhI9sAwBhK6wFyIhnHPu0otBRRYlktCfC3RA1b18KYvStOsq+VIX03iwgIokisj2tZH3qA9jSYzmbv5C0AzGfdgdEuRRVldkjGACvHqRcnLkwJm7pVBHDdc5TR3rEO4OosQqTDTZ3SXK3OxgAwTVH7UXzDaDdSuTo7W6kRRDC/wPP3F20cWxPYSt10o+6ocOrqoodIZ5+i+ar3Sw+MdB0HfjsAa937CPFplmL1r3F112+V3ghm/f+mrrv3fmL3LcTXGTCC+ZWUE90uIfUA4GP7J9NNtxUmANjLVYQI5mdXMLWTSZdITXQ8AJzjmmkv1jZdKk987AeuaHnVmg8BTMOT0hiw/yhLOo8jWJumY9gCtBBnV2UrTQ/gG1QPKw6mS3nEFXi1d77zYTLp93V5tSq7/z2Apc84Q+GCzmVOFXEiiKqbrNV4YrnXRgPHRS8iPChhrTIAzKWCCNo56zKlYyBlok3pQONYHrC4K52OAIgB088YrHzOkwkUPHsA01GYaK2NchPdZqzzEyyAh5OWAChbnNRYmUWVPmiqYGwbSav1JWYDgU6DEP/yUXzbaLQ82itPDyq5rhgHg0Cikap1G7AIcakRWaMvSQm3MbgaIdBGfBM8uMbpzDg0ypaWTvlO8QBxqUVoe9mZ7/dZg3BnzxmzUfNoq66rkEu4bRqjWxkgOyEuwZbX3hwCIGHQsSkJBHg63wQKYaCZOyIECG2cHphTQAje1CEL9WMAwGWp475A62Cb5thgwJHJZGAuWVNbtBHWMxL1kq0eW5zd3NN7aCjeA1ofDxg0Pa6/QZTIsszQP9chBH2TxVzQPtOCXcKdnZ2c8rEMIU8gIZtfzfkfQq8psc8NTqDaZyVmOUAM+7SwOsy116VGwOBnyKHrY6N5Xd3RicyDJSRuPCKi2aK3Xb/xuEemayX0gh7fRfsWYL6bE+HZyjPqpUedyrAU1/FeA+y58XALMoFko0MKzcfN9ryaMxs0WzjbsEIjNTwKJSd7z5qtRT0r9Vxy+drPx802ZQgcGlNb50slrmlK41xTisY5asVb6K+ebcbqW58/nrb7EYHvGufZCWaxTmFTKgZGNcrzSNUZed7N335w0IsYi8bTijsWuwtAKtvT3DjjahMSbvnNTx58rO6QDzEnGUmDLw8C2Ay1yjlon4V897+Fxb752ber5sv+zAB1fHugnaql1N7U8QXpX//ww/PxvD+rdIY6i9QJOyc+Ov/jhx+eIaWqxzt9PLqYDOEEISDEB8uffHznmPHf8nyA0Vkv4fku//nXe5XTx3n+y0fWIppqf77Mqdt1/nb2/72VUKQSiaTbAAAAAElFTkSuQmCC">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
@@ -1446,7 +1447,7 @@ function exportLaporanExcel() {
     const kelasFilter = document.getElementById('laporanKelas').value;
     const bulanIndex = BULAN_INDO.indexOf(bulan);
 
-    if (typeof XLSX === 'undefined') {
+    if (typeof ExcelJS === 'undefined') {
         showToast('Gagal memuat pustaka Excel. Cek koneksi internet / ekstensi pemblokir lalu muat ulang halaman.', 'error');
         return;
     }
@@ -1455,7 +1456,7 @@ function exportLaporanExcel() {
 
     // Selalu ambil data terbaru dari server, jangan andalkan agendaData yang
     // mungkin belum selesai dimuat di background saat tombol ini diklik.
-    callApi('getAgenda', {}, function(err, data) {
+    callApi('getAgenda', {}, async function(err, data) {
         if (err) { showToast('Gagal mengambil data agenda: ' + err.message, 'error'); return; }
         const source = data || [];
 
@@ -1494,20 +1495,50 @@ function exportLaporanExcel() {
             const tahunAjaran = isGanjil ? `${tahun}/${tahun+1}` : `${tahun-1}/${tahun}`;
             const judulKelas = kelasFilter ? ` KELAS ${kelasFilter}` : '';
 
-            const aoa = [
-                [`LAPORAN KEGIATAN BELAJAR MENGAJAR BULAN ${bulan.toUpperCase()}${judulKelas}`],
-                ['SMP ISLAM MOETIAH'],
-                [`SEMESTER ${semester} TAHUN AJARAN ${tahunAjaran}`],
-                [],
-                ['No', 'Hari, tanggal', 'Jam ke', 'Nama Pengajar', 'Mata Pelajaran', 'Siklus Inkuiri', 'AktivitasSiswa', 'Keterangan/Catatan', 'Hadir', 'Izin', 'Sakit', 'Alpha']
+            const thinBorder = { style: 'thin', color: { argb: 'FF000000' } };
+            const fullBorder = { top: thinBorder, left: thinBorder, bottom: thinBorder, right: thinBorder };
+
+            const workbook = new ExcelJS.Workbook();
+            const sheetName = `${bulan} ${tahun}`.substring(0, 31);
+            const ws = workbook.addWorksheet(sheetName, { views: [{ showGridLines: false }] });
+
+            ws.columns = [
+                { width: 4 }, { width: 20 }, { width: 8 }, { width: 24 }, { width: 20 },
+                { width: 16 }, { width: 42 }, { width: 32 }, { width: 7 }, { width: 7 }, { width: 7 }, { width: 7 }
             ];
 
-            const dayMerges = [];
+            // ---- Judul (3 baris, merge A:L, bold, center) ----
+            const titleLines = [
+                { text: `LAPORAN KEGIATAN BELAJAR MENGAJAR BULAN ${bulan.toUpperCase()}${judulKelas}`, size: 13 },
+                { text: 'SMP ISLAM MOETIAH', size: 13 },
+                { text: `SEMESTER ${semester} TAHUN AJARAN ${tahunAjaran}`, size: 11 }
+            ];
+            titleLines.forEach((line, i) => {
+                const rowNum = i + 1;
+                ws.mergeCells(rowNum, 1, rowNum, 12);
+                const cell = ws.getCell(rowNum, 1);
+                cell.value = line.text;
+                cell.font = { bold: true, size: line.size };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            });
+            ws.addRow([]); // baris kosong ke-4
+
+            // ---- Header tabel (baris ke-5, bold, border, background abu-abu) ----
+            const headerLabels = ['No', 'Hari, tanggal', 'Jam ke', 'Nama Pengajar', 'Mata Pelajaran', 'Siklus Inkuiri', 'AktivitasSiswa', 'Keterangan/Catatan', 'Hadir', 'Izin', 'Sakit', 'Alpha'];
+            const headerRow = ws.addRow(headerLabels);
+            headerRow.eachCell({ includeEmpty: true }, cell => {
+                cell.font = { bold: true };
+                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } };
+                cell.border = fullBorder;
+            });
+
+            // ---- Baris data, dikelompokkan per hari dengan sel No & Hari-tanggal digabung ----
             let dayNo = 1;
             groups.forEach(group => {
-                const startRow = aoa.length;
+                const startRowNum = ws.rowCount + 1;
                 group.items.forEach((item, idx) => {
-                    aoa.push([
+                    const row = ws.addRow([
                         idx === 0 ? dayNo : '',
                         idx === 0 ? group.hariTanggal : '',
                         formatJamKeRange(item.jamKe),
@@ -1521,31 +1552,37 @@ function exportLaporanExcel() {
                         item.sakit || 0,
                         item.alpha || 0
                     ]);
+                    row.eachCell({ includeEmpty: true }, cell => {
+                        cell.border = fullBorder;
+                        cell.alignment = { vertical: 'top', wrapText: true };
+                    });
+                    // Rata tengah untuk kolom Jam ke, Hadir, Izin, Sakit, Alpha
+                    [3, 9, 10, 11, 12].forEach(col => {
+                        row.getCell(col).alignment = { horizontal: 'center', vertical: 'top' };
+                    });
                 });
-                const endRow = aoa.length - 1;
-                if (endRow > startRow) {
-                    dayMerges.push({ s:{ r:startRow, c:0 }, e:{ r:endRow, c:0 } });
-                    dayMerges.push({ s:{ r:startRow, c:1 }, e:{ r:endRow, c:1 } });
+                const endRowNum = ws.rowCount;
+                if (endRowNum > startRowNum) {
+                    ws.mergeCells(startRowNum, 1, endRowNum, 1);
+                    ws.mergeCells(startRowNum, 2, endRowNum, 2);
                 }
+                ws.getCell(startRowNum, 1).alignment = { horizontal: 'center', vertical: 'middle' };
+                ws.getCell(startRowNum, 2).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
                 dayNo++;
             });
 
-            const ws = XLSX.utils.aoa_to_sheet(aoa);
-            ws['!merges'] = [
-                { s:{ r:0, c:0 }, e:{ r:0, c:11 } },
-                { s:{ r:1, c:0 }, e:{ r:1, c:11 } },
-                { s:{ r:2, c:0 }, e:{ r:2, c:11 } },
-                ...dayMerges
-            ];
-            ws['!cols'] = [
-                { wch:4 }, { wch:20 }, { wch:8 }, { wch:24 }, { wch:20 },
-                { wch:16 }, { wch:40 }, { wch:30 }, { wch:7 }, { wch:7 }, { wch:7 }, { wch:7 }
-            ];
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, `${bulan} ${tahun}`.substring(0, 31));
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
             const namaFileKelas = kelasFilter ? `_Kelas_${kelasFilter}` : '';
-            XLSX.writeFile(wb, `Buku_Agenda${namaFileKelas}_-_${bulan}_${tahun}.xlsx`);
+            a.download = `Buku_Agenda${namaFileKelas}_-_${bulan}_${tahun}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
             showToast('Laporan Excel berhasil diunduh');
         } catch (exportErr) {
             console.error('Export Excel error:', exportErr);
